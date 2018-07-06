@@ -89,7 +89,7 @@ function addWaterMark(file) {
 function cropImage(imagePath,dimensions) {
     return new Promise(function(resolve,reject) {
         Jimp.read(imagePath).then(function (image) {
-            image.crop( 500, 500, dimensions.width-parseInt(dimensions.width*0.3), dimensions.height-parseInt(dimensions.height*0.3))
+            image.crop( dimensions.width*0.1, dimensions.width*0.1, dimensions.width-parseInt(dimensions.width*0.3), dimensions.height-parseInt(dimensions.height*0.3))
                 .write(imagePath,function() {
                     resolve()
                 })
@@ -137,11 +137,13 @@ imageUploaderCtrl.imageUploadTasks = function(req,res) {
         }
         try {
             let files = await getFiles();
+            let filesData = [];
             files.forEach(async(file,index) => {
                 await addWaterMark(file);
                 zoomInImage(file);
-                if(index === files.length) {
-                    makeSlideShow(files);
+                filesData.push(path.resolve(__dirname + '/../../../processedImage/'+file));
+                if(index === files.length-1) {
+                    makeSlideShow(filesData);
                 }
             });
             res.end("File is uploaded");
